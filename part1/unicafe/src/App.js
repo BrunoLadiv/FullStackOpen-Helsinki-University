@@ -7,30 +7,34 @@ const Statistics = ({ good, neutral, bad }) => {
   return (
     <section id="statistics">
       <h1>Statistics</h1>
-      <StatisticLine
-        text="Good"
-        value={good}
-      />
-      <StatisticLine
-        text="Neutral"
-        value={neutral}
-      />
-      <StatisticLine
-        text="Bad"
-        value={bad}
-      />
-      <StatisticLine
-        text="Total"
-        value={total}
-      />
-      <StatisticLine
-        text="Average"
-        value={average}
-      />
-      <StatisticLine
-        text="Percentage"
-        value={percentage}
-      />
+      <table>
+        <tbody>
+          <StatisticLine
+            text="Good"
+            value={good}
+          />
+          <StatisticLine
+            text="Neutral"
+            value={neutral}
+          />
+          <StatisticLine
+            text="Bad"
+            value={bad}
+          />
+          <StatisticLine
+            text="Total"
+            value={total}
+          />
+          <StatisticLine
+            text="Average"
+            value={average.toFixed(2)}
+          />
+          <StatisticLine
+            text="Percentage"
+            value={percentage.toFixed(2)}
+          />
+        </tbody>
+      </table>
     </section>
   )
 }
@@ -45,20 +49,12 @@ const Button = ({ setGood, setNeutral, setBad }) => {
     </>
   )
 }
-const StatisticLine = ({ text, value }) => {
-  if (text === 'Average' || text === 'Percentage') {
-    return (
-      <h5>
-        {text}: {value.toFixed(2)}
-      </h5>
-    )
-  }
-  return (
-    <h5>
-      {text}: {value}
-    </h5>
-  )
-}
+const StatisticLine = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+)
 
 const App = () => {
   const [good, setGood] = useState(0)
