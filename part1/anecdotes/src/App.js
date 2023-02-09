@@ -34,16 +34,17 @@ const App = () => {
   }
   return (
     <>
-      <h2>{anecdotes[selected]}</h2>
-      <h4>
+      <h1>Anecdote of the day:</h1>
+      <h3>{anecdotes[selected]}</h3>
+      <h5>
         Has {vote[selected]} {vote[selected] === 1 ? 'like' : 'likes'}
-      </h4>
+      </h5>
 
       <button onClick={handleLike}>Like 👍</button>
       <button onClick={handleNextAnecdote}>Next Anecdote</button>
-      <h3>Anecdote with most likes: </h3>
-      <h2>{mostLikes != null ? anecdotes[mostLikes] : 'No likes yet ☹️'}</h2>
-      <h4>
+      <h1>Anecdote with most likes: </h1>
+      <h3>{mostLikes != null ? anecdotes[mostLikes] : 'No likes yet ☹️'}</h3>
+      <h5>
         {mostLikes !== null
           ? vote[mostLikes] === 0
             ? null
@@ -51,7 +52,7 @@ const App = () => {
                 vote[mostLikes] === 1 ? 'like' : 'likes'
               }`
           : null}
-      </h4>
+      </h5>
     </>
   )
 }
