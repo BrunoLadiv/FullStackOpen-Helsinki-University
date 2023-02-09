@@ -30,11 +30,11 @@ const App = () => {
         Neutral
       </button>
       <button onClick={() => setBad((prevBad) => prevBad + 1)}>Bad</button>
-      <Statistics
+      {good || neutral || bad ? <Statistics
         good={good}
         neutral={neutral}
         bad={bad}
-      />
+      />  : <h2>No feedback given yet</h2>}
     </div>
   )
 }
