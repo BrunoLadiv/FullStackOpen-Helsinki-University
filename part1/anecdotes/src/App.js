@@ -12,16 +12,27 @@ const App = () => {
   ]
   
   const [selected, setSelected] = useState(0)
+  const [vote, setVotes] = useState(Array(anecdotes.length).fill(0))
+
   // console.log(selected)
-  function handleClick() {
+  function handleNextAnecdote() {
     const randIndex =  Math.floor(Math.random() * anecdotes.length)
     setSelected(randIndex)
+  }
+  function handleLike() {
+    const voteCopy = [...vote]
+    voteCopy[selected] += 1
+    setVotes(voteCopy)
   }
   return (
     <>
       
       <h1>{anecdotes[selected]}</h1>
-      <button onClick={handleClick}>Next Anecdote</button>
+      <h3>Has {vote[selected] } {vote[selected] === 1 ? "like":"likes"}</h3>
+      
+      <button onClick={handleLike}>Like 👍</button>
+      <button onClick={handleNextAnecdote}>Next Anecdote</button>
+
     </>
   )
 }
