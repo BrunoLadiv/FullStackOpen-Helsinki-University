@@ -8,6 +8,12 @@ const App = () => {
 
   const handleFormSubmit = (event) => {
     event.preventDefault()
+   
+    if (persons.find(person => person.name.toLocaleLowerCase() === newName.toLocaleLowerCase())) {
+      alert(`${newName} is already added to phonebook`)
+      setNewName('')
+      return
+    }
     setPersons([...persons, { name: newName, id: persons.length++ }])
     setNewName('')
     
@@ -18,7 +24,7 @@ const App = () => {
     
 
   }
-  console.log(persons)
+  // console.log(persons)
   return (
     <div>
       <h2>Phonebook</h2>
