@@ -2,20 +2,23 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', id: 0 }
+    { name: 'Arto Hellas', id: 0, number: "324-532432" }
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const handleFormSubmit = (event) => {
     event.preventDefault()
    
-    if (persons.find(person => person.name.toLocaleLowerCase() === newName.toLocaleLowerCase())) {
+    if (persons.find(person => person.name.toLowerCase() === newName.toLowerCase())) {
       alert(`${newName} is already added to phonebook`)
       setNewName('')
+      setNewNumber('')
       return
     }
-    setPersons([...persons, { name: newName, id: persons.length++ }])
+    setPersons([...persons, { name: newName, id: persons.length++, number: newNumber }])
     setNewName('')
+    setNewNumber('')
     
   }
   const handleNewNameChange = (event) => {
@@ -24,20 +27,28 @@ const App = () => {
     
 
   }
+  const handleNewNumberChange = (event) => {
+    setNewNumber(event.target.value)
+
+  }
   // console.log(persons)
   return (
     <div>
       <h2>Phonebook</h2>
       <form onSubmit={handleFormSubmit}>
         <div>
-          name: <input value={newName} onChange={handleNewNameChange}/>
+          <span className='name'>name:</span> <input value={newName} onChange={handleNewNameChange}/>
+        </div>
+        <div>
+
+          number: <input  value={newNumber} onChange={handleNewNumberChange}/>
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map(person => <p key={person.id}>{person.name}</p>)}
+      {persons.map(person => <p key={person.id}>{person.name}: {person.number}</p>)}
     </div>
   )
 }
