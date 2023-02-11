@@ -2,22 +2,26 @@ import Persons from './Components/Persons'
 import Form from './Components/Form'
 import { useState, useEffect } from 'react'
 import Filter from './Components/Filter'
-import axios from 'axios'
+
+import personsServices from './services/personsServices'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-         .then((r) => setPersons(r.data))
+    const personsData = personsServices.getAll()
+    personsData.then((persons) => setPersons(persons))
   }, [])
-  // console.log(fPersons)
-  // console.log(persons)
 
   const handleFormSubmit = (event) => {
     event.preventDefault()
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
 
     if (
       persons.find(
@@ -29,10 +33,13 @@ const App = () => {
       setNewNumber('')
       return
     }
-    setPersons([
-      ...persons,
-      { name: newName, id: persons.length++, number: newNumber },
-    ])
+    personsServices
+      .create(newPerson)
+      .then((newPerson) =>
+        setPersons([...persons, { ...newPerson, id: persons.length++ }])
+      )
+      .catch((err) => console.log(err))
+
     setNewName('')
     setNewNumber('')
   }
