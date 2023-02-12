@@ -14,9 +14,13 @@ const del = id => {
   const request = axios.delete(`${baseUrl}/${id}`)
   return request
 }
+const update = (id, newObject) => {
+  return axios.put(`${baseUrl}/${id}`, newObject)
+}
 
 export default {
   getAll,
   create,
-  del
+  del,
+  update
 }

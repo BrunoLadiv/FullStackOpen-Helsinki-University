@@ -15,31 +15,50 @@ const App = () => {
     const personsData = personsServices.getAll()
     personsData.then((persons) => setPersons(persons))
   }, [])
-
+  const clearInput = () => {
+    setNewName('')
+    setNewNumber('')
+  }
   const handleFormSubmit = (event) => {
     event.preventDefault()
+    const personTofind = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    )
+    // console.log(personTofind);
     const newPerson = {
       name: newName,
       number: newNumber,
     }
 
-    if (
-      persons.find(
-        (person) => person.name.toLowerCase() === newName.toLowerCase()
+    if (personTofind) {
+      const confirm = window.confirm(
+        `${newName} is already added to phonebook, want to update the number?`
       )
-    ) {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewNumber('')
-      return
+      if (confirm) {
+        personsServices
+          .update(personTofind.id, {
+            name: personTofind.name,
+            number: newNumber,
+          })
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== personTofind.id ? person : response.data
+              )
+            )
+            clearInput()
+          })
+          .catch((err) => console.log(err))
+        clearInput()
+      }
     }
-    personsServices
-      .create(newPerson)
-      .then((newPerson) => setPersons([...persons, { ...newPerson }]))
-      .catch((err) => console.log(err))
-
-    setNewName('')
-    setNewNumber('')
+    if (!personTofind) {
+      personsServices
+        .create(newPerson)
+        .then((newPerson) => setPersons([...persons, { ...newPerson }]))
+        .catch((err) => console.log(err))
+      clearInput()
+    }
   }
   const handleNewNameChange = (event) => {
     // console.log(event)
@@ -58,8 +77,10 @@ const App = () => {
     const confirm = window.confirm(`Delete ${personToDelete.name} ?`)
     if (confirm) {
       const newArr = persons.filter((person) => person.id !== personID)
-      personsServices.del(personID).then( () => setPersons(newArr)).catch(err => console.log(err))
-      
+      personsServices
+        .del(personID)
+        .then(() => setPersons(newArr))
+        .catch((err) => console.log(err))
     }
     return
   }
