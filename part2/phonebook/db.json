@@ -1,34 +1,14 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 0
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
+      "name": "Marin Poppins",
+      "number": "4324235235",
       "id": 1
     },
     {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
+      "name": "Jhonny",
+      "number": "234235235",
       "id": 2
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 3
-    },
-    {
-      "name": "Bruno Vidal",
-      "number": "342355",
-      "id": 4
-    },
-    {
-      "name": "Jonathan",
-      "number": "352134355",
-      "id": 5
     }
   ]
 }

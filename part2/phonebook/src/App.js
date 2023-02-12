@@ -35,9 +35,7 @@ const App = () => {
     }
     personsServices
       .create(newPerson)
-      .then((newPerson) =>
-        setPersons([...persons, { ...newPerson, id: persons.length++ }])
-      )
+      .then((newPerson) => setPersons([...persons, { ...newPerson }]))
       .catch((err) => console.log(err))
 
     setNewName('')
@@ -52,6 +50,18 @@ const App = () => {
   }
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
+  }
+  const handleDelete = (personID) => {
+    // console.log(personID)
+    const personToDelete = persons.find((person) => person.id === personID)
+    // console.log(personToDelete)
+    const confirm = window.confirm(`Delete ${personToDelete.name} ?`)
+    if (confirm) {
+      const newArr = persons.filter((person) => person.id !== personID)
+      personsServices.del(personID).then( () => setPersons(newArr)).catch(err => console.log(err))
+      
+    }
+    return
   }
 
   return (
@@ -72,6 +82,7 @@ const App = () => {
       <Persons
         persons={persons}
         filter={filter}
+        handleDelete={handleDelete}
       />
     </div>
   )
