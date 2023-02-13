@@ -56,7 +56,7 @@ const App = () => {
             clearInput()
           })
           .catch((err) => {
-            setNotification()
+            console.log(err.message)
           })
         clearInput()
       }
