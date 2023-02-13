@@ -2,6 +2,7 @@ import Persons from './Components/Persons'
 import Form from './Components/Form'
 import { useState, useEffect } from 'react'
 import Filter from './Components/Filter'
+import Notification from './Components/Notification.jsx'
 
 import personsServices from './services/personsServices'
 
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     const personsData = personsServices.getAll()
@@ -46,6 +48,10 @@ const App = () => {
                 person.id !== personTofind.id ? person : response.data
               )
             )
+            setNotification(`${newPerson.name} was updated`)
+            setTimeout(() => {
+              setNotification(null)
+            }, 3000)
             clearInput()
           })
           .catch((err) => console.log(err))
@@ -57,6 +63,10 @@ const App = () => {
         .create(newPerson)
         .then((newPerson) => setPersons([...persons, { ...newPerson }]))
         .catch((err) => console.log(err))
+      setNotification(`${newPerson.name} was added to the Phonebook`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 3000)
       clearInput()
     }
   }
@@ -88,6 +98,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange}

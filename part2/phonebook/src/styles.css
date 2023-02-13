@@ -1,0 +1,10 @@
+.notification{
+  border: 2px rgb(18, 223, 18) solid;
+  color: rgb(18, 223, 18);
+  width: 100%;
+  background-color: rgb(144, 140, 140);
+  padding: 1rem;
+  font-size: 2rem;
+  border-radius: 0.9rem;
+
+}
