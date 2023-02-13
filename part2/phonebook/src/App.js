@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notification, setNotification] = useState(null)
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     const personsData = personsServices.getAll()
@@ -54,7 +55,9 @@ const App = () => {
             }, 3000)
             clearInput()
           })
-          .catch((err) => console.log(err))
+          .catch((err) => {
+            setNotification()
+          })
         clearInput()
       }
     }
@@ -90,7 +93,15 @@ const App = () => {
       personsServices
         .del(personID)
         .then(() => setPersons(newArr))
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          setIsError(true)
+          setNotification(`User ${personToDelete.name} has already been removed from the server`)
+          console.log(err.message)
+          setTimeout(() => {
+            setNotification(null)
+            setIsError(false)
+          }, 3000)
+        })
     }
     return
   }
@@ -98,7 +109,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification
+        isError={isError}
+        message={notification}
+      />
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange}

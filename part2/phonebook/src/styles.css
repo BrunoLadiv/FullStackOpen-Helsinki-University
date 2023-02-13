@@ -8,3 +8,13 @@
   border-radius: 0.9rem;
 
 }
+.error{
+  border: 2px rgb(239, 59, 32) solid;
+  color: rgb(239, 59, 32);
+  width: 100%;
+  background-color: rgb(144, 140, 140);
+  padding: 1rem;
+  font-size: 2rem;
+  border-radius: 0.9rem;
+
+}
