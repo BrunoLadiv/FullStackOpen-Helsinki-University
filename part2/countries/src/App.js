@@ -31,7 +31,10 @@ function App() {
         searchCountry={searchCountry}
         handleCountryChange={handleCountryChange}
       />
-      <FilteredCountries filteredCountries={filteredCountries} setSearchCountry={setSearchCountry} />
+      <FilteredCountries
+        filteredCountries={filteredCountries}
+        setSearchCountry={setSearchCountry}
+      />
     </div>
   )
 }

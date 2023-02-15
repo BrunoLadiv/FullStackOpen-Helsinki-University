@@ -1,5 +1,5 @@
+import Weather from './Weather'
 export default function SelectedCountry({ country }) {
-  
   return (
     <>
       <h1>{country.name.common}</h1>
@@ -12,7 +12,14 @@ export default function SelectedCountry({ country }) {
           return <li key={key[0]}>{key[1]}</li>
         })}
       </ul>
-      <img style={{border: '1px solid black'}} width={300} src={country.flags.svg} alt="country flag" />
+      <img
+        style={{ border: '1px solid black' }}
+        width={300}
+        src={country.flags.svg}
+        alt="country flag"
+      />
+
+      <Weather capital={country.capital} />
     </>
   )
 }
