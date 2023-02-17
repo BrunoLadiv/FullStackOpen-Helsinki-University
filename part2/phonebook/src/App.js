@@ -56,7 +56,13 @@ const App = () => {
             clearInput()
           })
           .catch((err) => {
-            console.log(err.message)
+            setIsError(true)
+            setNotification(err.response.data.error)
+            setTimeout(() => {
+              setNotification(null)
+              setIsError(false)
+            }, 3000)
+            clearInput()
           })
         clearInput()
       }
@@ -65,7 +71,15 @@ const App = () => {
       personsServices
         .create(newPerson)
         .then((newPerson) => setPersons([...persons, { ...newPerson }]))
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          setIsError(true)
+          setNotification(err.response.data.error)
+          setTimeout(() => {
+            setNotification(null)
+            setIsError(false)
+          }, 3000)
+          clearInput()
+        })
       setNotification(`${newPerson.name} was added to the Phonebook`)
       setTimeout(() => {
         setNotification(null)
@@ -95,7 +109,9 @@ const App = () => {
         .then(() => setPersons(newArr))
         .catch((err) => {
           setIsError(true)
-          setNotification(`User ${personToDelete.name} has already been removed from the server`)
+          setNotification(
+            `User ${personToDelete.name} has already been removed from the server`
+          )
           console.log(err.message)
           setTimeout(() => {
             setNotification(null)
