@@ -26,6 +26,29 @@ describe('Blog id test', () => {
   })
 })
 
+describe('Blogs POST ', () => {
+  test('new blog was added', async () => {
+    const testBlog = {
+      title: 'Cookies',
+      author: 'Bruno Vidal',
+      url: 'www.cookiesblog.com',
+      likes: 999,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const title = response.body.map((r) => r.title)
+
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+    expect(title).toContain('Cookies')
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
