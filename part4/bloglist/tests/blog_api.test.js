@@ -59,7 +59,7 @@ describe('Blogs POST ', () => {
 })
 describe('Likes test', () => {
   test('likes default to 0 if missing', async () => {
-    const newBlog = {
+    const testBlog = {
       title: 'Milk',
       author: 'Cow',
       url: 'https://milk.com',
@@ -67,11 +67,33 @@ describe('Likes test', () => {
 
     const response = await api
       .post('/api/blogs')
-      .send(newBlog)
+      .send(testBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
     expect(response.body.likes).toBe(0)
+  })
+})
+
+describe('Missin props test', () => {
+  test('fails if title is missing', async () => {
+    const testBlog = {
+      author: 'Some Author',
+      url: 'https://someurl.com',
+      likes: 23,
+    }
+
+    await api.post('/api/blogs').send(testBlog).expect(400)
+  })
+
+  test('fails if url is missing', async () => {
+    const testBlog = {
+      title: 'Some blog',
+      author: 'Some Author',
+      likes: 42,
+    }
+
+    await api.post('/api/blogs').send(testBlog).expect(400)
   })
 })
 
