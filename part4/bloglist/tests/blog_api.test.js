@@ -97,6 +97,27 @@ describe('Missin props test', () => {
   })
 })
 
+describe('deleting a blog post', () => {
+  test('blog deleted', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+
+    const ids = blogsAtEnd.map((blog) => blog.id)
+    expect(ids).not.toContain(blogToDelete.id)
+  })
+
+  test('fails with statuscode 404 if blog does not exist', async () => {
+    const validNonexistingId = await helper.nonExistingId()
+
+    await api.delete(`/api/blogs/${validNonexistingId}`).expect(404)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
