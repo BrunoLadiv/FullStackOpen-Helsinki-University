@@ -1,0 +1,4 @@
+/* eslint-disable */
+module.exports = () => {
+  process.exit(0)
+}
