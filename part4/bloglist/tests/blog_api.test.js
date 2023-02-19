@@ -18,6 +18,13 @@ describe('Correct format and amount of blogs', () => {
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 })
+describe('Blog id test', () => {
+  test('blog posts is named id instead of _id', async () => {
+    const response = await api.get('/api/blogs')
+
+    expect(response.body[0].id).toBeDefined()
+  })
+})
 
 afterAll(() => {
   mongoose.connection.close()
