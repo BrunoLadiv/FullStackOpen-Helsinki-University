@@ -118,6 +118,29 @@ describe('deleting a blog post', () => {
   })
 })
 
+describe('update (PUT) test', () => {
+  test('updating a blog', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedBlog = {
+      ...blogToUpdate,
+      likes: 999,
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const updatedPost = blogsAtEnd.find((blog) => blog.id === blogToUpdate.id)
+
+    expect(updatedPost.likes).toBe(updatedBlog.likes)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
