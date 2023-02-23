@@ -1,24 +1,30 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
-  // Blog
-  //   .find({})
-  //   .then(blogs => {
-  //     response.json(blogs)
-  //   }) i prefer this way ☹️
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const blog = new Blog(request.body)
-  if (!blog.title || !blog.url) {
-    return response.status(400).send({ error: 'title or url missing' })
+  const body = request.body
+  const user = await User.findById(body.user)
+
+  if (!body.title || !body.url) {
+    return response.status(400).end()
   }
-  if (!blog.likes) blog.likes = 0
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    user: user,
+    likes: body.likes ? body.likes : (body.likes = 0),
+  })
+  console.log('🚀 ~ blog:', blog)
 
   const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
   response.status(201).json(savedBlog)
 })
 
@@ -43,7 +49,9 @@ blogsRouter.put('/:id', async (request, response) => {
     likes: body.likes,
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  })
 
   if (updatedBlog) {
     response.json(updatedBlog.toJSON())
@@ -51,8 +59,5 @@ blogsRouter.put('/:id', async (request, response) => {
     response.status(404).end()
   }
 })
-
-
-
 
 module.exports = blogsRouter

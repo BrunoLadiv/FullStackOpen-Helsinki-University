@@ -1,16 +1,49 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+beforeEach(async () => {
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('secret', 10)
+  const user = new User({
+    username: 'root',
+    name: 'brunov',
+    blogs: [],
+    passwordHash,
+  })
+
+  await user.save()
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog))
-  const promiseArray = blogObjects.map((blog) => blog.save())
+  const users = await User.find({})
+  const user = users[0]
+  const id = users[0]._id
+
+  const blogObject = helper.initialBlogs.map(
+    (blog) =>
+      new Blog({
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        user: id,
+        likes: blog.likes ? blog.likes : 0,
+      })
+  )
+  const promiseArray = blogObject.map((blog) => {
+    blog.save()
+    user.blogs = user.blogs.concat(blog._id)
+  })
   await Promise.all(promiseArray)
+  await user.save()
 })
 
 describe('Correct format and amount of blogs', () => {
@@ -37,11 +70,15 @@ describe('Blog id test', () => {
 
 describe('Blogs POST ', () => {
   test('new blog was added', async () => {
+    const users = await User.find({})
+
+    const id = users[0]._id
     const testBlog = {
       title: 'Cookies',
       author: 'Bruno Vidal',
       url: 'www.cookiesblog.com',
       likes: 999,
+      user: id,
     }
 
     await api
@@ -59,10 +96,14 @@ describe('Blogs POST ', () => {
 })
 describe('Likes test', () => {
   test('likes default to 0 if missing', async () => {
+    const users = await User.find({})
+
+    const id = users[0]._id
     const testBlog = {
-      title: 'Milk',
-      author: 'Cow',
-      url: 'https://milk.com',
+      title: 'Cookies n Cream',
+      author: 'Bruno RL',
+      url: 'www.cookiesncreamblog.com',
+      user: id,
     }
 
     const response = await api
@@ -77,10 +118,14 @@ describe('Likes test', () => {
 
 describe('Missin props test', () => {
   test('fails if title is missing', async () => {
+    const users = await User.find({})
+
+    const id = users[0]._id
     const testBlog = {
-      author: 'Some Author',
-      url: 'https://someurl.com',
-      likes: 23,
+      author: 'Bruno twettVidal',
+      url: 'www.cookitwtwesblog.com',
+      likes: 999,
+      user: id,
     }
 
     await api.post('/api/blogs').send(testBlog).expect(400)
