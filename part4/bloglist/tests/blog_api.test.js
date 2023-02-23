@@ -6,44 +6,56 @@ const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
+let token
+let id
 
-beforeEach(async () => {
+
+beforeAll(async () => {
+  await Blog.deleteMany({})
   await User.deleteMany({})
-
-  const passwordHash = await bcrypt.hash('secret', 10)
+  const passwordHash = bcrypt.hashSync('secret', 10)
   const user = new User({
     username: 'root',
-    name: 'brunov',
-    blogs: [],
     passwordHash,
   })
-
   await user.save()
+}, 10000)
+
+describe('POST/login', () => {
+  test('authenticate user', async () => {
+    const user = {
+      username: 'root',
+      password: 'secret',
+    }
+
+    const res = await api.post('/api/login').send(user).expect(200)
+    token = res.body.token
+  })
 })
 
-beforeEach(async () => {
-  await Blog.deleteMany({})
+describe('POST/blogs', () => {
+  test('Create new blog with the right user', async () => {
+    const newBlog = {
+      title: 'Jet Set Radio',
+      author: 'SEGA',
+      url: 'https://store.steampowered.com/app/205950/Jet_Set_Radio/',
+      likes: 999,
+    }
 
-  const users = await User.find({})
-  const user = users[0]
-  const id = users[0]._id
+    const res = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  const blogObject = helper.initialBlogs.map(
-    (blog) =>
-      new Blog({
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        user: id,
-        likes: blog.likes ? blog.likes : 0,
-      })
-  )
-  const promiseArray = blogObject.map((blog) => {
-    blog.save()
-    user.blogs = user.blogs.concat(blog._id)
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map((blog) => blog.title)
+    expect(titles).toContain('Jet Set Radio')
+
+    id = res.body.id
+    console.log(id)
   })
-  await Promise.all(promiseArray)
-  await user.save()
 })
 
 describe('Correct format and amount of blogs', () => {
@@ -68,32 +80,6 @@ describe('Blog id test', () => {
   })
 })
 
-describe('Blogs POST ', () => {
-  test('new blog was added', async () => {
-    const users = await User.find({})
-
-    const id = users[0]._id
-    const testBlog = {
-      title: 'Cookies',
-      author: 'Bruno Vidal',
-      url: 'www.cookiesblog.com',
-      likes: 999,
-      user: id,
-    }
-
-    await api
-      .post('/api/blogs')
-      .send(testBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const response = await api.get('/api/blogs')
-    const title = response.body.map((r) => r.title)
-
-    expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
-    expect(title).toContain('Cookies')
-  })
-})
 describe('Likes test', () => {
   test('likes default to 0 if missing', async () => {
     const users = await User.find({})
@@ -185,6 +171,8 @@ describe('update (PUT) test', () => {
     expect(updatedPost.likes).toBe(updatedBlog.likes)
   })
 })
+
+
 
 afterAll(() => {
   mongoose.connection.close()
