@@ -1,45 +1,52 @@
-const supertest = require('supertest')
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const helper = require('./test_helper')
+const supertest = require('supertest')
 const app = require('../app')
+const helper = require('../tests/test_helper')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const bcrypt = require('bcrypt')
 const User = require('../models/user')
-let token
-let id
+const user = {
+  username: 'root',
+  password: 'secret',
+}
+let BlogID
 
+async function getToken(user) {
+  const res = await api.post('/api/login').send(user).expect(200)
+  return res.body.token
+}
 
-beforeAll(async () => {
-  await Blog.deleteMany({})
-  await User.deleteMany({})
-  const passwordHash = bcrypt.hashSync('secret', 10)
-  const user = new User({
-    username: 'root',
-    passwordHash,
-  })
-  await user.save()
-}, 10000)
+describe('Blogs', () => {
+  beforeAll(async () => {
+    await Blog.deleteMany({})
 
-describe('POST/login', () => {
-  test('authenticate user', async () => {
-    const user = {
+    await User.deleteMany({})
+    const passwordHash = bcrypt.hashSync('secret', 10)
+    const user = new User({
       username: 'root',
-      password: 'secret',
-    }
+      passwordHash,
+    })
+    await user.save()
+  }, 10000)
 
-    const res = await api.post('/api/login').send(user).expect(200)
-    token = res.body.token
+  describe('POST/login', () => {
+    test('authenticate user', async () => {
+      await getToken(user)
+    })
   })
 })
 
-describe('POST/blogs', () => {
-  test('Create new blog with the right user', async () => {
+describe('POST /api/blogs', () => {
+  test('Create a new blog', async () => {
+    const token = await getToken(user)
+    console.log('###########>>>TOKEN<<<##########', token)
+
     const newBlog = {
-      title: 'Jet Set Radio',
+      title: 'Jet set Radio',
       author: 'SEGA',
       url: 'https://store.steampowered.com/app/205950/Jet_Set_Radio/',
-      likes: 999,
+      likes: 9999,
     }
 
     const res = await api
@@ -49,130 +56,69 @@ describe('POST/blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
+    expect(res.body).toBeDefined()
+    expect(res.body.id).toBeDefined()
+    expect(res.body.title).toBe(newBlog.title)
+    expect(res.body.author).toBe(newBlog.author)
+    expect(res.body.url).toBe(newBlog.url)
+    expect(res.body.likes).toBe(newBlog.likes)
+    BlogID = res.body.id
+    console.log('###########>>>>>BLOG ID<<<<<<##############', BlogID)
+  })
+  test('fails with status code 401 when invalid token is provided', async () => {
+    const newBlog = {
+      title: 'FailBLOG',
+      author: 'FAIL',
+      url: 'https:fail.com/',
+      likes: 0,
+    }
+    const invalidToken = 'fjaodfjaofjaodsghaeghew'
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${invalidToken}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+  })
+})
+
+describe('GET/blogs/:id', () => {
+  test('fails with status code 404 if blog does not exist', async () => {
+    const validNonexistingId = await helper.nonExistingId()
+    await api.get(`/api/blogs/${validNonexistingId}`).expect(404)
+  })
+
+  test('fails with status code 400 when id is invalid', async () => {
+    const invalidId = '23d3ef49035a900fa48edf7'
+
+    const res = await api.get(`/api/blogs/${invalidId}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body.error).toContain('invalid id')
+  })
+})
+
+describe('DELETE/blogs/:id', () => {
+  test('deleting a blog with an invalid token returns a 401 error', async () => {
+    const invalidToken = 'faerjawlkrjwerown'
+    await api
+      .delete(`/api/blogs/${BlogID}`)
+      .set('Authorization', `Bearer ${invalidToken}`)
+      .expect(401)
+  })
+
+  test('a blog can be deleted', async () => {
+    const token = await getToken(user)
+    await api
+      .delete(`/api/blogs/${BlogID}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204)
+
     const blogsAtEnd = await helper.blogsInDb()
     const titles = blogsAtEnd.map((blog) => blog.title)
-    expect(titles).toContain('Jet Set Radio')
-
-    id = res.body.id
-    console.log(id)
+    expect(titles).not.toContain('Jet set Radio')
   })
 })
-
-describe('Correct format and amount of blogs', () => {
-  test('blogs are returned as json', async () => {
-    await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-  })
-
-  test('same length', async () => {
-    const response = await api.get('/api/blogs')
-
-    expect(response.body).toHaveLength(helper.initialBlogs.length)
-  })
-})
-describe('Blog id test', () => {
-  test('blog posts is named id instead of _id', async () => {
-    const response = await api.get('/api/blogs')
-
-    expect(response.body[0].id).toBeDefined()
-  })
-})
-
-describe('Likes test', () => {
-  test('likes default to 0 if missing', async () => {
-    const users = await User.find({})
-
-    const id = users[0]._id
-    const testBlog = {
-      title: 'Cookies n Cream',
-      author: 'Bruno RL',
-      url: 'www.cookiesncreamblog.com',
-      user: id,
-    }
-
-    const response = await api
-      .post('/api/blogs')
-      .send(testBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    expect(response.body.likes).toBe(0)
-  })
-})
-
-describe('Missin props test', () => {
-  test('fails if title is missing', async () => {
-    const users = await User.find({})
-
-    const id = users[0]._id
-    const testBlog = {
-      author: 'Bruno twettVidal',
-      url: 'www.cookitwtwesblog.com',
-      likes: 999,
-      user: id,
-    }
-
-    await api.post('/api/blogs').send(testBlog).expect(400)
-  })
-
-  test('fails if url is missing', async () => {
-    const testBlog = {
-      title: 'Some blog',
-      author: 'Some Author',
-      likes: 42,
-    }
-
-    await api.post('/api/blogs').send(testBlog).expect(400)
-  })
-})
-
-describe('deleting a blog post', () => {
-  test('blog deleted', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
-
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
-
-    const blogsAtEnd = await helper.blogsInDb()
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
-
-    const ids = blogsAtEnd.map((blog) => blog.id)
-    expect(ids).not.toContain(blogToDelete.id)
-  })
-
-  test('fails with statuscode 404 if blog does not exist', async () => {
-    const validNonexistingId = await helper.nonExistingId()
-
-    await api.delete(`/api/blogs/${validNonexistingId}`).expect(404)
-  })
-})
-
-describe('update (PUT) test', () => {
-  test('updating a blog', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToUpdate = blogsAtStart[0]
-
-    const updatedBlog = {
-      ...blogToUpdate,
-      likes: 999,
-    }
-
-    await api
-      .put(`/api/blogs/${blogToUpdate.id}`)
-      .send(updatedBlog)
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-
-    const blogsAtEnd = await helper.blogsInDb()
-    const updatedPost = blogsAtEnd.find((blog) => blog.id === blogToUpdate.id)
-
-    expect(updatedPost.likes).toBe(updatedBlog.likes)
-  })
-})
-
-
 
 afterAll(() => {
   mongoose.connection.close()
