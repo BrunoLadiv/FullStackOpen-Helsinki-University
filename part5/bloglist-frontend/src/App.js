@@ -97,13 +97,14 @@ const App = () => {
         </>
       ) : (
         <>
+          <h2 style={{display:'inline', margin: '5px'}}>Logged in as {user.username}</h2>
+          <button  onClick={handleLogout}>Logout</button>
           <NewBlogForm
             handleNewBlog={handleNewBlog}
             setNewBlog={setNewBlog}
             newBlog={newBlog}
-          />
+            />
           <h2>{user.username} Blogs</h2>
-          <button onClick={handleLogout}>Logout</button>
           {blogs.map((blog) => (
             <Blog
               key={blog.id}
