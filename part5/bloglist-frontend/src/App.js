@@ -4,13 +4,15 @@ import loginService from './services/login'
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import './styles.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUserName] = useState('')
   const [password, setUserPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [notification, setNotification] = useState({isError:false, messsage:''})
+
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -33,9 +35,9 @@ const App = () => {
       setUserName('')
       setUserPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotification({isError:true, message:'Wrong Credentials'})
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification({isError:false, messsage:''})
       }, 5000)
     }
   }
@@ -60,16 +62,28 @@ const App = () => {
 
   function handleNewBlog(event) {
     event.preventDefault()
-    console.log(newBlog)
+    // console.log(newBlog)
 
     blogService.create(newBlog).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog))
       setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
+      setNotification({...notification, message:`Blog: ${returnedBlog.title} by ${returnedBlog.author} added`})
+      setTimeout(() => {
+        setNotification({isError:false, messsage:''})
+      }, 5000)
+
+    }).catch(err => {
+      setNotification({isError:true, message:`Couldnt add the blog, make sure to fill all fields `})
+      setTimeout(() => {
+        setNotification({isError:false, messsage:''})
+      }, 5000)
     })
   }
 
   return (
+    
     <div>
+      {notification.message && <div className={`notifications ${notification.isError ? 'isError': ''}`}>{notification.message}</div>}
       {!user ? (
         <>
           <LoginForm

@@ -1,0 +1,16 @@
+.notifications{
+  width: 100%;
+  min-height: 30px;
+  background-color: rgb(171, 168, 168);
+  border: 2px solid rgb(14, 227, 14);
+  color: rgb(14, 227, 14);
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+.isError{
+  border: 2px solid rgb(236, 89, 21);
+  color: rgb(236, 89, 21);
+}
