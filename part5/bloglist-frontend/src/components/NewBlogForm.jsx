@@ -1,6 +1,37 @@
 import { useState } from 'react'
-export function NewBlogForm({ handleNewBlog, setNewBlog, newBlog }) {
+import blogService from '../services/blogs'
+
+export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
   const [showForm, setShowForm] = useState(false)
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    author: '',
+    url: '',
+    user: '',
+    likes: 0,
+  })
+
+  function handleNewBlog(event) {
+    event.preventDefault()
+    // console.log(newBlog)
+
+    blogService.create(newBlog).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog))
+      setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
+      setNotification({...notification, message:`Blog: ${returnedBlog.title} by ${returnedBlog.author} added`})
+      setTimeout(() => {
+        setNotification({isError:false, messsage:''})
+      }, 5000)
+
+    }).catch(err => {
+      setNotification({isError:true, message:`Couldnt add the blog, make sure to fill all fields `})
+      setTimeout(() => {
+        setNotification({isError:false, messsage:''})
+      }, 5000)
+    })
+  }
+
+
   function handleShowForm() {
     setShowForm((prevShowForm) => !prevShowForm)
   }

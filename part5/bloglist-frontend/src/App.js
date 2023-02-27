@@ -11,14 +11,9 @@ const App = () => {
   const [username, setUserName] = useState('')
   const [password, setUserPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({isError:false, messsage:''})
-
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: '',
-    user: '',
-    likes: 0,
+  const [notification, setNotification] = useState({
+    isError: false,
+    messsage: '',
   })
 
   async function handleLogin(event) {
@@ -35,9 +30,9 @@ const App = () => {
       setUserName('')
       setUserPassword('')
     } catch (exception) {
-      setNotification({isError:true, message:'Wrong Credentials'})
+      setNotification({ isError: true, message: 'Wrong Credentials' })
       setTimeout(() => {
-        setNotification({isError:false, messsage:''})
+        setNotification({ isError: false, messsage: '' })
       }, 5000)
     }
   }
@@ -60,30 +55,15 @@ const App = () => {
     setUser(null)
   }
 
-  function handleNewBlog(event) {
-    event.preventDefault()
-    // console.log(newBlog)
-
-    blogService.create(newBlog).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-      setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
-      setNotification({...notification, message:`Blog: ${returnedBlog.title} by ${returnedBlog.author} added`})
-      setTimeout(() => {
-        setNotification({isError:false, messsage:''})
-      }, 5000)
-
-    }).catch(err => {
-      setNotification({isError:true, message:`Couldnt add the blog, make sure to fill all fields `})
-      setTimeout(() => {
-        setNotification({isError:false, messsage:''})
-      }, 5000)
-    })
-  }
-
   return (
-    
     <div>
-      {notification.message && <div className={`notifications ${notification.isError ? 'isError': ''}`}>{notification.message}</div>}
+      {notification.message && (
+        <div
+          className={`notifications ${notification.isError ? 'isError' : ''}`}
+        >
+          {notification.message}
+        </div>
+      )}
       {!user ? (
         <>
           <LoginForm
@@ -97,13 +77,16 @@ const App = () => {
         </>
       ) : (
         <>
-          <h2 style={{display:'inline', margin: '5px'}}>Logged in as {user.username}</h2>
-          <button  onClick={handleLogout}>Logout</button>
+          <h2 style={{ display: 'inline', margin: '5px' }}>
+            Logged in as {user.username}
+          </h2>
+          <button onClick={handleLogout}>Logout</button>
           <NewBlogForm
-            handleNewBlog={handleNewBlog}
-            setNewBlog={setNewBlog}
-            newBlog={newBlog}
-            />
+            setNotification={setNotification}
+            setBlogs={setBlogs}
+            notification={notification}
+            blogs={blogs}
+          />
           <h2>{user.username} Blogs</h2>
           {blogs.map((blog) => (
             <Blog
