@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setBlogs, blogs }) => {
+const Blog = ({ blog, setBlogs, blogs, setNotification }) => {
   const [viewBlog, setViewBlog] = useState(false)
   function handleViewBlog() {
     setViewBlog((prevViewBlog) => !prevViewBlog)
@@ -19,7 +19,25 @@ const Blog = ({ blog, setBlogs, blogs }) => {
         console.log(error)
       })
   }
-
+  function handleBlogDelete(id) {
+    if (window.confirm(`Remove blog: ${blog.title} by: ${blog.author} ?`)) {
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter((blog) => blog.id !== id))
+          setNotification({ isError: false, message: `Blog: ${blog.title} removed ` })
+          setTimeout(() => {
+            setNotification({ isError: false, messsage: '' })
+          }, 5000)
+        })
+        .catch((error) => {
+          setNotification({ isError: true, message: `Couldnt delete blog, error: ${error.message}` })
+          setTimeout(() => {
+            setNotification({ isError: false, messsage: '' })
+          }, 5000)
+        })
+    }
+  }
   return (
     <div className="blog-style">
       {!viewBlog ? (
@@ -36,17 +54,24 @@ const Blog = ({ blog, setBlogs, blogs }) => {
         <>
           <span> Title: {blog.title} </span>
           <span> Author: {blog.author}</span>
-          <span> Site: {blog.url}</span>
+          <span> Site: <a rel='noreferrer' target='_blank' href={ blog.url.includes('https://') ? `${blog.url}`: `https://${blog.url}`}> {blog.url} </a></span>
           <span>Added by: {blog.user.username}</span>
           <span>
             Likes: {blog.likes}{' '}
-            <button onClick={() => handleLike(blog)}>like</button>
+            <button onClick={() => handleLike(blog)}>👍 Like</button>
           </span>
+
           <button
             className="blog-btn"
             onClick={handleViewBlog}
           >
             hide
+          </button>
+          <button
+            onClick={() => handleBlogDelete(blog.id)}
+            className="remove-btn"
+          >
+            remove
           </button>
         </>
       )}

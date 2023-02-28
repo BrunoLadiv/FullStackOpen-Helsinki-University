@@ -92,6 +92,7 @@ const App = () => {
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
+                setNotification={setNotification}
                 key={blog.id}
                 blog={blog}
                 setBlogs={setBlogs}

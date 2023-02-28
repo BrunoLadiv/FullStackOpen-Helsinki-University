@@ -30,4 +30,15 @@
   width: 50px;
   margin-left: 15px;
 }
+.remove-btn{
+  background-color: red;
+  max-width: 70px;
+  margin: 5px 0px 0px 15px;
+  border-radius: 5px;
+  color: white;
+
+}
+.remove-btn:hover{
+  background-color: rgb(131, 18, 18);
+}
 
