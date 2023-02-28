@@ -14,3 +14,20 @@
   border: 2px solid rgb(236, 89, 21);
   color: rgb(236, 89, 21);
 }
+.blog-style{
+  text-indent: 15px;
+  border-radius: 10px;
+  padding: 10px;
+  padding-left: 2px;
+  border: 1px solid black;
+  border-width: 1px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-btn{
+  width: 50px;
+  margin-left: 15px;
+}
+

@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
+export function NewBlogForm({
+  setNotification,
+  setBlogs,
+  notification,
+  blogs,
+}) {
   const [showForm, setShowForm] = useState(false)
   const [newBlog, setNewBlog] = useState({
     title: '',
@@ -15,22 +20,34 @@ export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
     event.preventDefault()
     // console.log(newBlog)
 
-    blogService.create(newBlog).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-      setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
-      setNotification({...notification, message:`Blog: ${returnedBlog.title} by ${returnedBlog.author} added`})
-      setTimeout(() => {
-        setNotification({isError:false, messsage:''})
-      }, 5000)
+    blogService
+      .create(newBlog)
+      .then((returnedBlog) => {
+        // setBlogs(blogs.concat(returnedBlog))
+        blogService.getAll().then((updatedBlogs) => {
+          setBlogs(updatedBlogs)
+        })
 
-    }).catch(err => {
-      setNotification({isError:true, message:`Couldnt add the blog, make sure to fill all fields `})
-      setTimeout(() => {
-        setNotification({isError:false, messsage:''})
-      }, 5000)
-    })
+        setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
+
+        setNotification({
+          ...notification,
+          message: `Blog: ${returnedBlog.title} by ${returnedBlog.author} added`,
+        })
+        setTimeout(() => {
+          setNotification({ isError: false, messsage: '' })
+        }, 5000)
+      })
+      .catch((err) => {
+        setNotification({
+          isError: true,
+          message: `Couldnt add the blog, make sure to fill all fields `,
+        })
+        setTimeout(() => {
+          setNotification({ isError: false, messsage: '' })
+        }, 5000)
+      })
   }
-
 
   function handleShowForm() {
     setShowForm((prevShowForm) => !prevShowForm)
@@ -39,7 +56,7 @@ export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
     handleNewBlog(event)
     setTimeout(() => {
       handleShowForm()
-    }, 500);
+    }, 500)
   }
   return (
     <div>
@@ -47,9 +64,8 @@ export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
         <button onClick={handleShowForm}>New Blog</button>
       ) : (
         <>
-          
           <h2>Create New</h2>
-          <form onSubmit={(event) => handleFormSubmit(event)} >
+          <form onSubmit={(event) => handleFormSubmit(event)}>
             <label>
               <p>
                 Title:
@@ -92,7 +108,7 @@ export function NewBlogForm({setNotification, setBlogs, notification,blogs}) {
                 />
               </p>
             </label>
-            <button  type="submit">Create</button>
+            <button type="submit">Create</button>
             <button
               onClick={handleShowForm}
               style={{ display: 'block' }}

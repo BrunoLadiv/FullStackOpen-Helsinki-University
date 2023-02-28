@@ -87,7 +87,7 @@ const App = () => {
             notification={notification}
             blogs={blogs}
           />
-          <h2>{user.username} Blogs</h2>
+          <h2>{user.username} Blogs:</h2>
           {blogs.map((blog) => (
             <Blog
               key={blog.id}
