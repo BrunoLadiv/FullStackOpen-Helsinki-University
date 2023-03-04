@@ -55,6 +55,46 @@ const App = () => {
     setUser(null)
   }
 
+  function handleLike(blog) {
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+
+    blogService
+      .update(blog.id, updatedBlog)
+
+      .then((returnedBlog) => {
+        setBlogs(blogs.map((b) => (b.id !== blog.id ? b : returnedBlog)))
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  function handleBlogDelete(id, blog) {
+    if (window.confirm(`Remove blog: ${blog.title} by: ${blog.author} ?`)) {
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter((blog) => blog.id !== id))
+          setNotification({
+            isError: false,
+            message: `Blog: ${blog.title} removed `,
+          })
+          setTimeout(() => {
+            setNotification({ isError: false, messsage: '' })
+          }, 5000)
+        })
+        .catch((error) => {
+          setNotification({
+            isError: true,
+            message: `Couldnt delete blog, error: ${error.message}`,
+          })
+          setTimeout(() => {
+            setNotification({ isError: false, messsage: '' })
+          }, 5000)
+        })
+    }
+  }
+
   return (
     <div>
       {notification.message && (
@@ -92,11 +132,10 @@ const App = () => {
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
-                setNotification={setNotification}
                 key={blog.id}
                 blog={blog}
-                setBlogs={setBlogs}
-                blogs={blogs}
+                handleLike={handleLike}
+                handleBlogDelete={handleBlogDelete}
               />
             ))}
         </>
