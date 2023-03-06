@@ -15,7 +15,7 @@ const App = () => {
     isError: false,
     messsage: '',
   })
-
+ 
   async function handleLogin(event) {
     event.preventDefault()
     // console.log('logging in with', username, password)
@@ -95,6 +95,40 @@ const App = () => {
     }
   }
 
+  function handleNewBlog(event,newBlog,setNewBlog) {
+    event.preventDefault()
+    // console.log(newBlog)
+
+    blogService
+      .create(newBlog)
+      .then((returnedBlog) => {
+        // setBlogs(blogs.concat(returnedBlog))
+        blogService.getAll().then((updatedBlogs) => {
+          setBlogs(updatedBlogs)
+        })
+
+        setNewBlog({ title: '', author: '', url: '', user: '', likes: 0 })
+
+        setNotification({
+          ...notification,
+          message: `Blog: ${returnedBlog.title} by ${returnedBlog.author} added`,
+        })
+        setTimeout(() => {
+          setNotification({ isError: false, messsage: '' })
+        }, 5000)
+      })
+      .catch((err) => {
+        setNotification({
+          isError: true,
+          message: `Couldnt add the blog, make sure to fill all fields `,
+        })
+        setTimeout(() => {
+          setNotification({ isError: false, messsage: '' })
+        }, 5000)
+      })
+  }
+
+
   return (
     <div>
       {notification.message && (
@@ -122,10 +156,7 @@ const App = () => {
           </h2>
           <button onClick={handleLogout}>Logout</button>
           <NewBlogForm
-            setNotification={setNotification}
-            setBlogs={setBlogs}
-            notification={notification}
-            blogs={blogs}
+            handleNewBlog={handleNewBlog}
           />
           <h2>{user.username} Blogs:</h2>
           {blogs
