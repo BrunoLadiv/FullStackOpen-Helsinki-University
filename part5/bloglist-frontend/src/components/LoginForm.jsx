@@ -12,6 +12,7 @@ export function LoginForm({
       <div>
         username
         <input
+          id='username'
           type="text"
           value={userName}
           name="Username"
@@ -21,13 +22,14 @@ export function LoginForm({
       <div>
         password
         <input
+          id='password'
           type="password"
           value={userPassword}
           name="Password"
           onChange={({ target }) => setUserPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button id='login-button' type="submit">login</button>
     </form>
   )
 }
