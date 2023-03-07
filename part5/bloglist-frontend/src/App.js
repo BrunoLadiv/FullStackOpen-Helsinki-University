@@ -33,7 +33,7 @@ const App = () => {
       setNotification({ isError: true, message: 'Wrong Credentials' })
       setTimeout(() => {
         setNotification({ isError: false, messsage: '' })
-      }, 5000)
+      }, 10000)
     }
   }
 
@@ -81,7 +81,7 @@ const App = () => {
           })
           setTimeout(() => {
             setNotification({ isError: false, messsage: '' })
-          }, 5000)
+          }, 10000)
         })
         .catch((error) => {
           setNotification({
@@ -90,7 +90,7 @@ const App = () => {
           })
           setTimeout(() => {
             setNotification({ isError: false, messsage: '' })
-          }, 5000)
+          }, 10000)
         })
     }
   }
@@ -115,7 +115,7 @@ const App = () => {
         })
         setTimeout(() => {
           setNotification({ isError: false, messsage: '' })
-        }, 5000)
+        }, 10000)
       })
       .catch((err) => {
         setNotification({
@@ -124,7 +124,7 @@ const App = () => {
         })
         setTimeout(() => {
           setNotification({ isError: false, messsage: '' })
-        }, 5000)
+        }, 10000)
       })
   }
 
