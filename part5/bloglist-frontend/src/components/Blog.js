@@ -49,7 +49,8 @@ const Blog = ({ blog, handleLike, handleBlogDelete }) => {
           >
             hide
           </button>
-          <button
+            <button
+              id='remove-btn'
             onClick={() => handleBlogDelete(blog.id, blog)}
             className="remove-btn"
           >

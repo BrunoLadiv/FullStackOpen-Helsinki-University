@@ -53,7 +53,7 @@ describe('Blog app', function () {
 
   describe('when logged in', function () {
     const blog = {
-      title: 'new blog created with Cypress',
+      title: 'Cypress Blog',
       author: 'mirek',
       url: 'www.example.com',
     }
@@ -88,6 +88,20 @@ describe('Blog app', function () {
       cy.contains('Likes: 0')
       cy.get('#like').click()
       cy.contains('Likes: 1')
+    })
+    it('tests if user is able to delete a blog', function () {
+      cy.contains('New Blog').click()
+
+      cy.get('#title').type(blog.title)
+      cy.get('#author').type(blog.author)
+      cy.get('#url').type(blog.url)
+      cy.get('#create-button').click()
+      cy.get('#view').click()
+      cy.contains('remove').click()
+      
+      
+      
+      
     })
   })
 })
