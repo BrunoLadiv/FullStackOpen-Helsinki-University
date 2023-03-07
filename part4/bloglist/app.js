@@ -9,6 +9,10 @@ const logger = require('./utils/logger')
 const usersRouter = require('./controllers/users')
 const mongoose = require('mongoose')
 const middleware = require('./utils/middleware')
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
 
 mongoose.connect(MONGODB_URI)
   .then(() => {

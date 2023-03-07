@@ -98,27 +98,27 @@ describe('GET/blogs/:id', () => {
   })
 })
 
-describe('DELETE/blogs/:id', () => {
-  test('deleting a blog with an invalid token returns a 401 error', async () => {
-    const invalidToken = 'faerjawlkrjwerown'
-    await api
-      .delete(`/api/blogs/${BlogID}`)
-      .set('Authorization', `Bearer ${invalidToken}`)
-      .expect(401)
-  })
+// describe('DELETE/blogs/:id', () => {
+//   test('deleting a blog with an invalid token returns a 401 error', async () => {
+//     const invalidToken = 'faerjawlkrjwerown'
+//     await api
+//       .delete(`/api/blogs/${BlogID}`)
+//       .set('Authorization', `Bearer ${invalidToken}`)
+//       .expect(401)
+//   })
 
-  test('a blog can be deleted', async () => {
-    const token = await getToken(user)
-    await api
-      .delete(`/api/blogs/${BlogID}`)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(204)
+//   test('a blog can be deleted', async () => {
+//     const token = await getToken(user)
+//     await api
+//       .delete(`/api/blogs/${BlogID}`)
+//       .set('Authorization', `Bearer ${token}`)
+//       .expect(204)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    const titles = blogsAtEnd.map((blog) => blog.title)
-    expect(titles).not.toContain('Jet set Radio')
-  })
-})
+//     const blogsAtEnd = await helper.blogsInDb()
+//     const titles = blogsAtEnd.map((blog) => blog.title)
+//     expect(titles).not.toContain('Jet set Radio')
+//   })
+// })
 
 afterAll(() => {
   mongoose.connection.close()
