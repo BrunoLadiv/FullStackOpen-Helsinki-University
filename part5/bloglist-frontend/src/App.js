@@ -102,7 +102,7 @@ const App = () => {
     blogService
       .create(newBlog)
       .then((returnedBlog) => {
-        // setBlogs(blogs.concat(returnedBlog))
+        setBlogs(blogs.concat(returnedBlog))
         blogService.getAll().then((updatedBlogs) => {
           setBlogs(updatedBlogs)
         })
@@ -120,7 +120,7 @@ const App = () => {
       .catch((err) => {
         setNotification({
           isError: true,
-          message: `Couldnt add the blog, make sure to fill all fields `,
+          message: `error: ${err.message} `,
         })
         setTimeout(() => {
           setNotification({ isError: false, messsage: '' })

@@ -1,29 +1,45 @@
-/* disable-eslint */
-describe('Note app', function () {
+/* eslint-disable */
+
+describe('Blog app', function () {
+  const backendUrl = Cypress.env('BACKEND')
+
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
-      name: 'mirek',
-      username: 'root',
-      password: 'secret'
-    }
-    cy.request('POST', 'http://localhost:3003/api/users/', user) 
-    cy.visit('http://localhost:3000')
+    cy.visit('')
+    cy.request('POST', `${backendUrl}/testing/reset`)
+
+    const users = [
+      {
+        name: 'mirek',
+        username: 'mirek',
+        password: '12345',
+      },
+      {
+        name: 'adm',
+        username: 'root',
+        password: '12345',
+      },
+    ]
+
+    cy.wrap(users).each((user) => {
+      cy.request('POST', `${backendUrl}/users/`, user)
+    })
   })
 
-  it('checks that the application displays the login form by default.', function () {
-    cy.contains('Login to see your Blogs')
-    cy.contains('username')
-    cy.contains('password')
-    cy.contains('login')
+  describe('login form', function () {
+    it('can be opened', function () {
+      cy.contains('login')
+    })
   })
-  describe('Login', function () {
+
+  describe('login', function () {
     it('succeeds with correct credentials', function () {
-      cy.get('#username').type('root')
-      cy.get('#password').type('secret')
-      cy.get('#login-button').click()
-      cy.contains('Logged in as root')
-      cy.contains('root Blogs:')
+      const user = {
+        username: 'mirek',
+        password: '12345',
+      }
+
+      cy.login(user)
+      cy.contains('mirek Blogs:')
     })
 
     it('fails with wrong credentials', function () {
@@ -32,6 +48,34 @@ describe('Note app', function () {
       cy.get('#login-button').click()
 
       cy.contains('Wrong Credentials')
+    })
+  })
+
+  describe('when logged in', function () {
+    const blog = {
+      title: 'new blog created with Cypress',
+      author: 'mirek',
+      url: 'www.example.com',
+    }
+
+    beforeEach(function () {
+      const user = {
+        username: 'mirek',
+        password: '12345',
+      }
+
+      cy.login(user)
+    })
+
+    it('can create a new blog', function () {
+      cy.contains('New Blog').click()
+
+      cy.get('#title').type(blog.title)
+      cy.get('#author').type(blog.author)
+      cy.get('#url').type(blog.url)
+      cy.get('#create-button').click()
+
+      cy.contains(`${blog.title} by ${blog.author}`)
     })
   })
 })

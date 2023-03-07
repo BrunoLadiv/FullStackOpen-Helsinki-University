@@ -22,15 +22,16 @@ export function NewBlogForm({ handleNewBlog }) {
   return (
     <div>
       {!showForm ? (
-        <button onClick={handleShowForm}>New Blog</button>
+        <button id='new-blog-button' onClick={handleShowForm }>New Blog</button>
       ) : (
         <>
-          <h2>Create New</h2>
+          <h2 >Create New</h2>
           <form onSubmit={(event) => handleFormSubmit(event)}>
             <label>
               <p>
                 Title:
-                <input
+                  <input
+                    id='title'
                   required
                   type="text"
                   value={newBlog.title}
@@ -44,7 +45,8 @@ export function NewBlogForm({ handleNewBlog }) {
             <label>
               <p>
                 Author:
-                <input
+                  <input
+                    id='author'
                   required
                   type="text"
                   value={newBlog.author}
@@ -58,7 +60,8 @@ export function NewBlogForm({ handleNewBlog }) {
             <label>
               <p>
                 Url:
-                <input
+                  <input
+                    id='url'
                   required
                   type="text"
                   value={newBlog.url}
@@ -69,10 +72,12 @@ export function NewBlogForm({ handleNewBlog }) {
                 />
               </p>
             </label>
-            <button type="submit">Create</button>
+            <button id="create-button"type="submit">Create</button>
             <button
               onClick={handleShowForm}
-              style={{ display: 'block' }}
+                style={{ display: 'block' }}
+                id='cancel-button'
+              
             >
               Cancel
             </button>
