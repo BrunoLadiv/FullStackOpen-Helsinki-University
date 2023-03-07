@@ -77,5 +77,17 @@ describe('Blog app', function () {
 
       cy.contains(`${blog.title} by ${blog.author}`)
     })
+    it('tests the like feature', function () {
+      cy.contains('New Blog').click()
+
+      cy.get('#title').type(blog.title)
+      cy.get('#author').type(blog.author)
+      cy.get('#url').type(blog.url)
+      cy.get('#create-button').click()
+      cy.get('#view').click()
+      cy.contains('Likes: 0')
+      cy.get('#like').click()
+      cy.contains('Likes: 1')
+    })
   })
 })

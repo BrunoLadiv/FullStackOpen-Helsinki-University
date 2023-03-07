@@ -12,6 +12,7 @@ const Blog = ({ blog, handleLike, handleBlogDelete }) => {
         <>
           {blog.title} by: {blog.author}
           <button
+            id='view'
             className="blog-btn"
             onClick={handleViewBlog}
           >
@@ -39,7 +40,7 @@ const Blog = ({ blog, handleLike, handleBlogDelete }) => {
           <span>Added by: {blog.user.username}</span>
           <span>
             Likes: {blog.likes}
-            <button onClick={() => handleLike(blog)}>👍 Like</button>
+            <button id='like' onClick={() => handleLike(blog)}>👍 Like</button>
           </span>
 
           <button
