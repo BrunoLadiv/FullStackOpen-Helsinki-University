@@ -1,18 +1,18 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, handleLike, handleBlogDelete }) => {
+const Blog = ({ blog, handleLike, handleBlogDelete, currentUser }) => {
   const [viewBlog, setViewBlog] = useState(false)
   function handleViewBlog() {
     setViewBlog((prevViewBlog) => !prevViewBlog)
   }
-
+  
   return (
-    <div className="blog-style">
+    <div className="blog-style blog">
       {!viewBlog ? (
         <>
           {blog.title} by: {blog.author}
           <button
-            id='view'
+            id="view"
             className="blog-btn"
             onClick={handleViewBlog}
           >
@@ -40,7 +40,12 @@ const Blog = ({ blog, handleLike, handleBlogDelete }) => {
           <span>Added by: {blog.user.username}</span>
           <span>
             Likes: {blog.likes}
-            <button id='like' onClick={() => handleLike(blog)}>👍 Like</button>
+            <button
+              id="like"
+              onClick={() => handleLike(blog)}
+            >
+              👍 Like
+            </button>
           </span>
 
           <button
@@ -49,13 +54,13 @@ const Blog = ({ blog, handleLike, handleBlogDelete }) => {
           >
             hide
           </button>
-            <button
-              id='remove-btn'
+          {blog.user.username === currentUser.username && <button
+            id="remove-btn"
             onClick={() => handleBlogDelete(blog.id, blog)}
             className="remove-btn"
           >
             remove
-          </button>
+          </button>}
         </>
       )}
     </div>

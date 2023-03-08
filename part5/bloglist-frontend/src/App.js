@@ -15,7 +15,7 @@ const App = () => {
     isError: false,
     messsage: '',
   })
- 
+
   async function handleLogin(event) {
     event.preventDefault()
     // console.log('logging in with', username, password)
@@ -95,14 +95,13 @@ const App = () => {
     }
   }
 
-  function handleNewBlog(event,newBlog,setNewBlog) {
+  function handleNewBlog(event, newBlog, setNewBlog) {
     event.preventDefault()
     // console.log(newBlog)
 
     blogService
       .create(newBlog)
       .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog))
         blogService.getAll().then((updatedBlogs) => {
           setBlogs(updatedBlogs)
         })
@@ -127,7 +126,6 @@ const App = () => {
         }, 10000)
       })
   }
-
 
   return (
     <div>
@@ -155,18 +153,18 @@ const App = () => {
             Logged in as {user.username}
           </h2>
           <button onClick={handleLogout}>Logout</button>
-          <NewBlogForm
-            handleNewBlog={handleNewBlog}
-          />
+          <NewBlogForm handleNewBlog={handleNewBlog} />
           <h2>{user.username} Blogs:</h2>
           {blogs
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
+                className="blog"
                 key={blog.id}
                 blog={blog}
                 handleLike={handleLike}
                 handleBlogDelete={handleBlogDelete}
+                currentUser={user}
               />
             ))}
         </>
