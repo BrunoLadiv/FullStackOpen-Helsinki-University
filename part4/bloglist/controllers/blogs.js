@@ -66,6 +66,16 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
     return response.status(401).end()
   }
 })
+blogsRouter.delete('/:id', userExtractor, async (req, res) => {
+  const blog = await Blog.findById(req.params.id)
+  if (blog.user.toString() === req.user.id) {
+    await Blog.findByIdAndRemove(req.params.id)
+
+    res.status(204).end()
+  } else {
+    res.status(401).json({ error: 'unauthorized' })
+  }
+})
 
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
