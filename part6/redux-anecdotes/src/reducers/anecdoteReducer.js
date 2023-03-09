@@ -6,6 +6,10 @@ const anecdotesAtStart = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
 ]
+export const newAnecdote = (anecdote) => ({
+  type: 'NEW_ANECDOTE',
+  payload: { content: anecdote, id: getId(), votes: 0 },
+})
 export const actionVote = (id) => {
   return {
     type: 'VOTE',
@@ -19,6 +23,7 @@ const initialState = anecdotesAtStart.map((anecdote) => ({
   id: getId(),
   votes: 0,
 }))
+
 
 const reducer = (state = initialState, action) => {
   // console.log('state now: ', state)
@@ -34,6 +39,8 @@ const reducer = (state = initialState, action) => {
       return state.map((anecdote) =>
         anecdote.id !== id ? anecdote : voteAnecdote
       )
+    case 'NEW_ANECDOTE':
+      return [...state, action.payload]
     default:
       return state
   }
