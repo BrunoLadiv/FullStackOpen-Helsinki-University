@@ -1,3 +1,5 @@
+import { createSlice } from '@reduxjs/toolkit'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -6,16 +8,7 @@ const anecdotesAtStart = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
 ]
-export const newAnecdote = (anecdote) => ({
-  type: 'NEW_ANECDOTE',
-  payload: { content: anecdote, id: getId(), votes: 0 },
-})
-export const actionVote = (id) => {
-  return {
-    type: 'VOTE',
-    data: { id },
-  }
-}
+
 const getId = () => (100000 * Math.random()).toFixed(0)
 
 const initialState = anecdotesAtStart.map((anecdote) => ({
@@ -24,25 +17,27 @@ const initialState = anecdotesAtStart.map((anecdote) => ({
   votes: 0,
 }))
 
-const reducer = (state = initialState, action) => {
-  // console.log('state now: ', state)
-  // console.log('action', action)
-  switch (action.type) {
-    case 'VOTE':
-      const id = action.data.id
+const anecdotesSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    vote: (state, action) => {
+      const id = action.payload
       const anecdoteToVote = state.find((anecdote) => anecdote.id === id)
-      const voteAnecdote = {
-        ...anecdoteToVote,
-        votes: anecdoteToVote.votes + 1,
+      anecdoteToVote.votes += 1
+      state.sort((a, b) => b.votes - a.votes)
+    },
+    addAnecdote: (state, action) => {
+      const newAnecdote = {
+        content: action.payload,
+        id: getId(),
+        votes: 0,
       }
-      return state
-        .map((anecdote) => (anecdote.id !== id ? anecdote : voteAnecdote))
-        .sort((a, b) => b.votes - a.votes)
-    case 'NEW_ANECDOTE':
-      return [...state, action.payload]
-    default:
-      return state
-  }
-}
+      return [...state, newAnecdote]
+    },
+  },
+})
 
-export default reducer
+export const { vote, addAnecdote } = anecdotesSlice.actions
+
+export default anecdotesSlice.reducer
