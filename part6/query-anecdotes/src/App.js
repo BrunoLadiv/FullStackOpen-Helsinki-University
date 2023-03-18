@@ -7,7 +7,7 @@ const App = () => {
   const handleVote = (anecdote) => {
     console.log('vote')
   }
-  const result = useQuery('anecdotes', getAnecdotes)
+  const result = useQuery('anecdotes', getAnecdotes, {refetchOnWindowFocus: false})
 
   const anecdotes = result.data
 
