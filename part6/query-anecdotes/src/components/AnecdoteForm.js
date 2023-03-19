@@ -11,16 +11,28 @@ const AnecdoteForm = () => {
       const anecdotes = queryClient.getQueryData('anecdotes')
       queryClient.setQueryData('anecdotes', anecdotes.concat(newAnecdote))
     },
+    onError: (error) => {
+      dispatchNotification({
+        type: 'MESSAGE',
+        payload: error.response.data.error,
+      })
+      setTimeout(() => {
+        dispatchNotification({ type: 'CLEAR' })
+      }, 5000)
+    },
   })
   const onCreate = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     newAnecdoteMutation.mutate({ content, votes: 0 })
     event.target.anecdote.value = ''
-    dispatchNotification({ type: 'MESSAGE', payload: `You created: ${content} ` })
+    dispatchNotification({
+      type: 'MESSAGE',
+      payload: `You created: ${content} `,
+    })
     setTimeout(() => {
       dispatchNotification({ type: 'CLEAR' })
-    }, 5000);
+    }, 5000)
     // console.log('new anecdote')
   }
 
@@ -28,7 +40,7 @@ const AnecdoteForm = () => {
     <div>
       <h3>create new</h3>
       <form onSubmit={onCreate}>
-        <input minlength="5" name="anecdote" />
+        <input name="anecdote" />
         <button type="submit">create</button>
       </form>
     </div>
